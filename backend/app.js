@@ -6,109 +6,102 @@ const mongoose = require('mongoose');
 const app = express();
 
 
-const Plato= require('./models/plato');
+const Activo = require('./models/activo.models');
 
 
 app.use(express.json());
 app.use(cors());
 
-
-const Connection = async()=> { 
+const Conexion = async()=> { 
     try {
-         mongoose.connect(process.env.MONGO);
-        console.log('Conexion Exitosa');
-
+        await mongoose.connect(process.env.MONGOURI);
+        console.log('CONNECTED TO MONGODB!!');
+       
     } catch (error) {
-        throw new Error('No se conecto')
-    }
+        console.log(error)
+        throw new Error('FAILED TO CONNECT TO MONGODB')
+    }   
   }
 
-Connection(); 
+Conexion();
 
-app.get('/platos', async (req, res) => {
-    console.log('TRYING TO FETCH PlatoS');
+
+app.get('/activos', async (req, res) => {
+    console.log('TRYING TO FETCH ActivoS');
     try {
-      const Platos = await Plato.find();
+      const Activos = await Activo.find();
       res.status(200).json({
-        Platos: Platos.map((Plato) => ({
-          id: Plato.id,
-         NombrePlato: Plato.NombrePlato,
+        activos: Activos.map((Activo) => ({
+          id: Activo.id,
+          activotecnologico: Activo.activotecnologico,
         })),
       });
-      console.log('FETCHED PlatoS');
+      console.log('FETCHED Activos');
     } catch (err) {
-      console.error('ERROR FETCHING PlatoS');
+      console.error('ERROR FETCHING Activos');
       console.error(err.message);
-      res.status(500).json({ message: 'Failed to load Platos.' });
-    }
-  });
-
-  app.post('/platos', async (req, res) => {
-    console.log('TRYING TO STORE plato');
-    const nombre = req.body.NombrePlato;
-  
-    if (!nombre || nombre.trim().length === 0) {
-      console.log('INVALID INPUT - NO NombrePlato');
-      return res.status(422).json({ message: 'Invalid plato NombrePlato.' });
-    }
-  
-    const plato = new Plato({
-      NombrePlato: nombre,
-    });
-  
-    try {
-      await plato.save();
-      res
-        .status(201)
-        .json({ message: 'plato saved', plato: { id: plato.id, NombrePlato: nombre } });
-      console.log('STORED NEW plato');
-    } catch (err) {
-      console.error('ERROR FETCHING plato');
-      console.error(err.message);
-      res.status(500).json({ message: 'Failed to save plato.' });
-    }
-  });
-
-
-  app.delete('/plato/:id', async (req, res) => {
-    console.log('TRYING TO DELETE Plato');
-    try {
-      await Plato.deleteOne({ _id: req.params.id });
-      res.status(200).json({ message: 'Deleted Plato!' });
-      console.log('DELETED Plato');
-    } catch (err) {
-      console.error('ERROR FETCHING platos');
-      console.error(err.message);
-      res.status(500).json({ message: 'Failed to delete Plato.' });
-
-    }
-  });
-
-app.put('/plato/:id', async (req, res) => {
-    console.log('TRYING TO UPDATE plato');
-    try {
-     const {id} = req.params;
-     const {...data } =  req.body;
-     console.log(id,data)
-     await Plato.findByIdAndUpdate(id,data )
-    console.log('UPDATE plato');
-    res.status(200).json({ message: 'Actualizo' });
-    } catch (err) {
-      console.error('ERROR FETCHING plato');
-      console.error(err.message);
-      res.status(500).json({ message: 'Failed to update plato.' });
+      res.status(500).json({ message: 'Failed to load Activos.' });
     }
 });
 
 
+app.post('/activos', async (req, res) => {
+    console.log('TRYING TO STORE activo');
+    const activotecnologico = req.body.activotecnologico;
+  
+    if (!activotecnologico || activotecnologico.trim().length === 0) {
+      console.log('INVALID INPUT - NO activotecnologico');
+      return res.status(422).json({ message: 'Invalid activo activotecnologico.' });
+    }
+  
+    const activo = new Activo({
+      activotecnologico: activotecnologico,
+    });
+  
+    try {
+      await activo.save();
+      res
+        .status(201)
+        .json({ message: 'activo saved', activo});
+      console.log('STORED NEW activo');
+    } catch (err) {
+      console.error('ERROR FETCHING activoS');
+      console.error(err.message);
+      res.status(500).json({ message: 'Failed to save activo.' });
+    }
+  });
+
+app.put('/activo/:id', async (req, res) => {
+    console.log('TRYING TO UPDATE ACTIVO');
+    try {
+     const {id} = req.params;
+     const {...data } =  req.body;
+     console.log(id,data)
+     await Activo.findByIdAndUpdate(id,data )
+    console.log('UPDATE ACTIVO');
+    res.status(200).json({ message: 'Actualiza dato' });
+    } catch (err) {
+      console.error('ERROR FETCHING Activo');
+      console.error(err.message);
+      res.status(500).json({ message: 'Failed to update Activo.' });
+    }
+});
 
 
+app.delete('/activo/:id', async (req, res) => {
+    console.log('TRYING TO DELETE Activo');
+    try {
+         await Activo.deleteOne({ _id: req.params.id });
+      res.status(200).json({ message: 'Deleted Activo!' });
+      console.log('DELETED Activo');
+    } catch (err) {
+      console.error('ERROR FETCHING ActivoS');
+      console.error(err.message);
+      res.status(500).json({ message: 'Failed to delete Activo.' });
+    }
+  });
+
+  console.log('Hola mundo');
 
 
-
-
-
-app.listen(process.env.PORT,()=>{
-    console.log("Server ON ")
-})
-
+app.listen(process.env.PORT, ()=> { console.log('SERVIDOR INICIADO')});
