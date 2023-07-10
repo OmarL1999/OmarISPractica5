@@ -16,7 +16,7 @@ app.use(cors());
 const Connection = async()=> { 
     try {
          mongoose.connect(process.env.MONGO);
-        console.log('Conexion Exitosa');
+        console.log('Conexion Exitosa 1');
 
     } catch (error) {
         throw new Error('No se conecto')
